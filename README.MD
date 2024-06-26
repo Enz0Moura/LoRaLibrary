@@ -26,7 +26,7 @@ The LoRaLibrary facilitates easy communication using LoRa networks between embed
 ## Usage
 
 The module enables Arduino-based systems to send and receive structured messages via the LoRa network.
-test message
+Test
 ### Message Format
 
 Messages are returned in a structured binary format over the serial port, which can be deserialized using methods available in C++ or other supported languages.
