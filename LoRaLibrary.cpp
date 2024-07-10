@@ -71,16 +71,8 @@ void receiveMessage() {
     uint8_t len = sizeof(buf);
 
     if (rf95.recv(buf, &len)) {
-      Serial.println("Received message by LoRa: ");
-      for (uint8_t i = 0; i < len; i++) {
-        Serial.print(buf[i], HEX);
-        Serial.print(" ");
-      }
-      Serial.println();
 
       if (buf[0] == 0xFF && buf[1] == 0xFF) {
-        Serial.println("Header verified");
-
         // Transmite os dados recebidos de volta para o Python para desserialização
         Serial.write(buf, len);
       } else {
