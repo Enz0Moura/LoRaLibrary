@@ -1,13 +1,18 @@
 #include <LoRaLibrary.h>
 #define MESSAGELEN 21
 #define BEACONLEN 10
-
+#define ISACK 1
 void setup() {
   setupLoRa();
   Serial.println("READY");
+  int response;
 }
 
 void loop() {
+  response = -1;
+  while (response == -1){
+    response = receiveMessage(ISACK);
+  }
   if (Serial.available() == MESSAGELEN) { // Esperar até que todos os bytes da mensagem sejam recebidos, incluindo cabeçalho
     uint8_t received_message[MESSAGELEN];
     Serial.readBytes(received_message, MESSAGELEN);
