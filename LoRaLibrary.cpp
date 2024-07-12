@@ -1,7 +1,5 @@
 #include "LoRaLibrary.h"
 
-#include <cstdint>
-
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
 void setupLoRa() {
