@@ -12,7 +12,10 @@
 extern RH_RF95 rf95;
 
 void setupLoRa();
-void sendMessage(uint8_t* data, uint8_t length);
-void receiveMessage();
 
+void sendMessage(uint8_t *data, uint8_t length);
+
+int receiveMessage(bool is_ack);
+
+int sendBeacon(uint8_t *data, uint8_t length);
 #endif
