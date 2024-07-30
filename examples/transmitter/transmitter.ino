@@ -5,11 +5,10 @@
 void setup() {
   setupLoRa();
   Serial.println("READY");
-  int response;
 }
 
 void loop() {
-  response = -1;
+  int response = -1;
   while (response == -1){
     response = receiveMessage(ISACK);
   }
@@ -19,7 +18,6 @@ void loop() {
     Serial.println("ACK");
 
     // Verificar o cabeçalho e a mensagem recebida
-    Serial.print("Received message: ");
     for (uint8_t i = 0; i < MESSAGELEN; i++) {
       Serial.print(received_message[i], HEX);
       Serial.print(" ");

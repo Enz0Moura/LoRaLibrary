@@ -78,7 +78,6 @@ int receiveMessage(bool is_ack) {
         uint8_t len = sizeof(buf);
 
         if (rf95.recv(buf, &len)) {
-            Serial.println("Received message by LoRa: ");
             for (uint8_t i = 0; i < len; i++) {
                 Serial.print(buf[i], HEX);
                 Serial.print(" ");
@@ -92,6 +91,7 @@ int receiveMessage(bool is_ack) {
                 if (is_ack == 0) {
                     Serial.write(buf, len);
                 } else {
+                    Serial.println();
                     Serial.write("ACK");
                 }
                 return 1;
