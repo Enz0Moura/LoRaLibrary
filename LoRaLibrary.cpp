@@ -67,8 +67,7 @@ void sendMessage(uint8_t *data, uint8_t length) {
 
 int sendBeacon(uint8_t *data, uint8_t length) {
     sendMessage(data, length);
-    bool is_ack = 1;
-    int response = receiveMessage(is_ack);
+    int response = receiveMessage(1);
     return response;
 };
 
@@ -92,7 +91,7 @@ int receiveMessage(bool is_ack) {
                     Serial.write(buf, len);
                 } else {
                     Serial.println();
-                    Serial.write("ACK");
+                    Serial.write("Beacon Received");
                 }
                 return 1;
             }
@@ -102,4 +101,5 @@ int receiveMessage(bool is_ack) {
         Serial.println("Reception failed");
         return -1;
     }
+
 }
