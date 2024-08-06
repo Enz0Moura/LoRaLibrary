@@ -80,9 +80,10 @@ void receiveMessage() {
 
       if (buf[0] == 0xFF && buf[1] == 0xFF) {
         Serial.println("Header verified");
-
+        Serial.println();
         // Transmite os dados recebidos de volta para o Python para desserialização
         Serial.write(buf, len);
+        Serial.println();
       } else {
         Serial.println("Incorrect Header");
       }
