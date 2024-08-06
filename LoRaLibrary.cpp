@@ -66,8 +66,17 @@ void sendMessage(uint8_t *data, uint8_t length) {
 }
 
 int sendBeacon(uint8_t *data, uint8_t length) {
-    sendMessage(data, length);
-    int response = receiveMessage(1);
+    unsigned long start_time = millis();
+    int response = -1;
+
+    while (millis() - start_time < 3000) {
+        sendMessage(data, length);
+        response = receiveMessage(1);
+        if (response != -1) {
+            break;
+        }
+    }
+
     return response;
 };
 
@@ -101,5 +110,9 @@ int receiveMessage(bool is_ack) {
         Serial.println("Reception failed");
         return -1;
     }
+    if (is_ack == 1){
+        Serial.println("No beacon available");
+    };
+    return -1;
 
-}
+};

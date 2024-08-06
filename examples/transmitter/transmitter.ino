@@ -9,11 +9,11 @@ void setup() {
 }
 
 void loop() {
-  int response = -1;
-  while (response == -1){
-    response = receiveMessage(ISACK);
-  }
-  if (Serial.available() == MESSAGELEN) { // Esperar até que todos os bytes da mensagem sejam recebidos, incluindo cabeçalho
+  Serial.println("READY");
+  int response;
+  response = receiveMessage(ISACK);
+
+  if (response == 1 && Serial.available() == MESSAGELEN) { // Esperar até que todos os bytes da mensagem sejam recebidos, incluindo cabeçalho
     uint8_t received_message[MESSAGELEN];
     Serial.readBytes(received_message, MESSAGELEN);
     Serial.println("ACK");
@@ -27,23 +27,38 @@ void loop() {
 
     sendMessage(received_message, MESSAGELEN);
   }
-  else if (Serial.available() == BEACONLEN) { // Esperar até que todos os bytes da mensagem sejam recebidos, incluindo cabeçalho
-    uint8_t received_message[BEACONLEN];
-    Serial.readBytes(received_message, BEACONLEN);
+  else { // Esperar até que todos os bytes da mensagem sejam recebidos, incluindo cabeçalho
+	unsigned long start_time = millis();
+	int beacon_response;
+	while (millis() - start_time < 3000) {
+    	beacon_response = receiveMessage(1);
+		if (beacon_response == 1){
+			break;
+		};
+	};
 
-    int response = sendBeacon(received_message, BEACONLEN);
+	if (beacon_response != -1){
+	Serial.println("Sending Beacon");
+  	while (Serial.available() < BEACONLEN) {
+  	}
+    if (Serial.available() == BEACONLEN){
+	    uint8_t received_message[BEACONLEN];
+	    Serial.readBytes(received_message, BEACONLEN);
 
-    if (response == 1){
-		Serial.println("ACK");
-	  }
-	else if (response == -1){
-    Serial.println("No confirmation received");
+	    int ack = sendBeacon(received_message, BEACONLEN);
+
+	    if (ack == 1){
+			Serial.println("ACK");
+	    	receiveMessage(0);
+	    	delay(250);
+		  }
+		else {
+    		Serial.println("No confirmation received");
+		}
 	}
 	}
-    receiveMessage(0);
-    delay(250);
-
-
+	}
+	//TODO: Lógica de recebimento de mensagem está zuada para caramba
 
   delay(1000);
 }
