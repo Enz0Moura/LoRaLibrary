@@ -78,7 +78,7 @@ int sendBeacon(uint8_t *data, uint8_t length) {
         }
 
     }
-    if (response != -1){
+    if (response == -1){
         Serial.println("No beacon available");
     }
     return response;
