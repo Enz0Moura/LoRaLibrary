@@ -14,7 +14,7 @@ State currentState = INITIALIZING;
 
 void setup() {
     setupLoRa();
-    currentState = WAITING_FOR_RECORD;
+    currentState = WAITING_FOR_MESSAGE;
 }
 
 void loop() {
@@ -31,12 +31,27 @@ void loop() {
     }
 }
 
-void waitForMessage() {
-    Serial.println("READY");
+void handleCommand(String command) {
+    if (command == "wm") {
+        currentState = WAITING_FOR_MESSAGE;
+        Serial.println("Estado redefinido para WAITING_FOR_MESSAGE.");
+        waitForMessage();
+    } else if (command == "wr") {
+        currentState = WAITING_FOR_RECORD;
+        Serial.println("Estado alterado para WAITING_FOR_RECORD.");
+        listenForRecord();
+    } else {
+        Serial.println("Comando desconhecido.");
+    }
+}
 
+void waitForMessage() {
 	unsigned long start_time = millis();
+	Serial.println("READY");
+
     while (Serial.available() < MESSAGELEN) {
-        if (millis() - start_time > 3000) {
+        Serial.println("READY");
+        if (millis() - start_time > 10000) {
             Serial.println("Timeout waiting for message, restarting...");
             currentState = WAITING_FOR_RECORD;
             return;
@@ -46,7 +61,6 @@ void waitForMessage() {
     if (Serial.available() == MESSAGELEN) {
         uint8_t received_message[MESSAGELEN];
         Serial.readBytes(received_message, MESSAGELEN);
-        Serial.println("ACK");
 
         // Verificar o cabeçalho e a mensagem recebida
         for (uint8_t i = 0; i < MESSAGELEN; i++) {
@@ -56,6 +70,7 @@ void waitForMessage() {
         Serial.println();
 
         sendMessage(received_message, MESSAGELEN);
+        Serial.println("ACK");
         currentState = WAITING_FOR_RECORD;
     }
 }
@@ -64,6 +79,9 @@ void waitForMessage() {
 void listenForRecord() {
 	int response = receiveMessage(0);
 	unsigned long start_time = millis();
+	while(response == -1 && start_time - millis() < 10000){
+		response = receiveMessage(0);
+	}
 	if (response == 1) {
 		currentState = WAITING_FOR_MESSAGE;
 	}

@@ -60,6 +60,7 @@ void sendMessage(uint8_t *data, uint8_t length) {
             Serial.print(" ");
         }
         Serial.println();
+        Serial.println("ACK");
     } else {
         Serial.println("Incorrect Header");
     }
