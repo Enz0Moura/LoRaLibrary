@@ -66,15 +66,14 @@ void sendMessage(uint8_t *data, uint8_t length) {
 }
 
 int sendBeacon(uint8_t *data, uint8_t length) {
+    int response;
+    sendMessage(data, length);
     unsigned long start_time = millis();
-    int response = -1;
-
-    while (millis() - start_time < 5000) {
-        sendMessage(data, length);
+    while (millis() - start_time < 10000) {
         response = receiveMessage(1);
-        if (response != -1) {
-            Serial.println("Beacon Received");
-            break;
+        if (response == 1) {
+            Serial.println("ACK");
+            return response;
         }
 
     }
@@ -85,32 +84,34 @@ int sendBeacon(uint8_t *data, uint8_t length) {
 };
 
 int receiveMessage(bool is_ack) {
-    if (rf95.available()) {
-        uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-        uint8_t len = sizeof(buf);
+    unsigned long start_time = millis();
 
-        if (rf95.recv(buf, &len)) {
-            for (uint8_t i = 0; i < len; i++) {
-                Serial.print(buf[i], HEX);
-                Serial.print(" ");
-            }
-            Serial.println();
+    while (millis() - start_time < 10000) {
+        if (rf95.available()) {
+            uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+            uint8_t len = sizeof(buf);
 
-            if (buf[0] == 0xFF && buf[1] == 0xFF) {
-                Serial.println("Header verified");
-
-                // Transmite os dados recebidos de volta para o Python para desserialização
-                if (is_ack == 0) {
-                    Serial.write(buf, len);
+            if (rf95.recv(buf, &len)) {
+                for (uint8_t i = 0; i < len; i++) {
+                    Serial.print(buf[i], HEX);
+                    Serial.print(" ");
                 }
-                return 1;
+                Serial.println();
+
+                if (buf[0] == 0xFF && buf[1] == 0xFF) {
+                    Serial.println("Header verified");
+
+                        Serial.write(buf, len);
+
+                    return 1;
+                }
+                Serial.println("Incorrect Header");
+                return -1;
             }
-            Serial.println("Incorrect Header");
+            Serial.println("Reception failed");
             return -1;
         }
-        Serial.println("Reception failed");
-        return -1;
     }
     return -1;
+}
 
-};
