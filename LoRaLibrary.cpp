@@ -69,14 +69,18 @@ int sendBeacon(uint8_t *data, uint8_t length) {
     unsigned long start_time = millis();
     int response = -1;
 
-    while (millis() - start_time < 3000) {
+    while (millis() - start_time < 5000) {
         sendMessage(data, length);
         response = receiveMessage(1);
         if (response != -1) {
+            Serial.println("Beacon Received");
             break;
         }
-    }
 
+    }
+    if (response != -1){
+        Serial.println("No beacon available");
+    }
     return response;
 };
 
@@ -98,9 +102,6 @@ int receiveMessage(bool is_ack) {
                 // Transmite os dados recebidos de volta para o Python para desserialização
                 if (is_ack == 0) {
                     Serial.write(buf, len);
-                } else {
-                    Serial.println();
-                    Serial.write("Beacon Received");
                 }
                 return 1;
             }
@@ -110,9 +111,6 @@ int receiveMessage(bool is_ack) {
         Serial.println("Reception failed");
         return -1;
     }
-    if (is_ack == 1){
-        Serial.println("No beacon available");
-    };
     return -1;
 
 };

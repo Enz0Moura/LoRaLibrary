@@ -10,10 +10,8 @@ void setup() {
 
 void loop() {
   Serial.println("READY");
-  int response;
-  response = receiveMessage(ISACK);
 
-  if (response == 1 && Serial.available() == MESSAGELEN) { // Esperar até que todos os bytes da mensagem sejam recebidos, incluindo cabeçalho
+  if (Serial.available() == MESSAGELEN) { // Esperar até que todos os bytes da mensagem sejam recebidos, incluindo cabeçalho
     uint8_t received_message[MESSAGELEN];
     Serial.readBytes(received_message, MESSAGELEN);
     Serial.println("ACK");
@@ -33,14 +31,14 @@ void loop() {
 	while (millis() - start_time < 3000) {
     	beacon_response = receiveMessage(1);
 		if (beacon_response == 1){
+			Serial.println("Beacon Received");
 			break;
 		};
 	};
 
-	if (beacon_response != -1){
+	if (beacon_response == -1){
+	start_time = millis();
 	Serial.println("Sending Beacon");
-  	while (Serial.available() < BEACONLEN) {
-  	}
     if (Serial.available() == BEACONLEN){
 	    uint8_t received_message[BEACONLEN];
 	    Serial.readBytes(received_message, BEACONLEN);
@@ -48,8 +46,15 @@ void loop() {
 	    int ack = sendBeacon(received_message, BEACONLEN);
 
 	    if (ack == 1){
+			start_time = millis();
 			Serial.println("ACK");
-	    	receiveMessage(0);
+			while (millis - start_time < 5000){
+				int received_message = receiveMessage(0);
+				if (received_message == 1) {
+						break;
+					}
+			}
+
 	    	delay(250);
 		  }
 		else {
