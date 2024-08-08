@@ -15,11 +15,9 @@ State currentState = INITIALIZING;
 void setup() {
     setupLoRa();
     currentState = WAITING_FOR_RECORD;
-    Serial.println("READY");
 }
 
 void loop() {
-	Serial.println("READY");
     switch (currentState) {
         case WAITING_FOR_MESSAGE:
             waitForMessage();
@@ -66,9 +64,6 @@ void waitForMessage() {
 void listenForRecord() {
 	int response = receiveMessage(0);
 	unsigned long start_time = millis();
-	while(response == -1 && start_time - millis() < 10000){
-		response = receiveMessage(0);
-	}
 	if (response == 1) {
 		currentState = WAITING_FOR_MESSAGE;
 	}
