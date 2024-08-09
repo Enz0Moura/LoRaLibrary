@@ -72,6 +72,8 @@ void waitForMessage() {
         sendMessage(received_message, MESSAGELEN);
         Serial.println("ACK");
         currentState = WAITING_FOR_RECORD;
+		delay(150);
+		listenForRecord();
     }
 }
 
@@ -84,6 +86,7 @@ void listenForRecord() {
 	}
 	if (response == 1) {
 		currentState = WAITING_FOR_MESSAGE;
+
 	}
 }
 

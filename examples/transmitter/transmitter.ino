@@ -5,64 +5,72 @@
 #define ISACK 1
 
 enum State {
-    INITIALIZING,
+    IDLE,
     WAITING_FOR_MESSAGE,
-	WAITING_FOR_RECORD,
+    WAITING_FOR_RECORD
 };
 
-State currentState = INITIALIZING;
+State currentState = IDLE;
 
 void setup() {
+    Serial.begin(9600);
     setupLoRa();
-    currentState = WAITING_FOR_MESSAGE;
+    currentState = IDLE;
 }
 
 void loop() {
+    // Verifica se há um comando na serial
+    if (Serial.available()) {
+        char command = Serial.read();
+        handleCommand(command);
+    }
+
+    // Executa a rotina correspondente ao estado atual
     switch (currentState) {
         case WAITING_FOR_MESSAGE:
             waitForMessage();
             break;
-		case WAITING_FOR_RECORD:
-			listenForRecord();
-			break;
+        case WAITING_FOR_RECORD:
+            listenForRecord();
+            break;
+        case IDLE:
         default:
-            currentState = WAITING_FOR_MESSAGE;
             break;
     }
 }
 
-void handleCommand(String command) {
-    if (command == "wm") {
+void handleCommand(char command) {
+    if (command == 'M') {
         currentState = WAITING_FOR_MESSAGE;
         Serial.println("Estado redefinido para WAITING_FOR_MESSAGE.");
-        waitForMessage();
-    } else if (command == "wr") {
+        return;
+    } else if (command == 'B') {
         currentState = WAITING_FOR_RECORD;
         Serial.println("Estado alterado para WAITING_FOR_RECORD.");
-        listenForRecord();
+        return;
     } else {
         Serial.println("Comando desconhecido.");
+        return;
     }
 }
 
 void waitForMessage() {
-	unsigned long start_time = millis();
-	Serial.println("READY");
+    unsigned long start_time = millis();
+    Serial.println("READY");
 
     while (Serial.available() < MESSAGELEN) {
-      Serial.println("READY");
+        Serial.println("READY");
         if (millis() - start_time > 10000) {
-            Serial.println("Timeout waiting for message, restarting...");
-            currentState = WAITING_FOR_RECORD;
+            Serial.println("Timeout waiting for message, retornando ao estado IDLE...");
+            currentState = IDLE;
             return;
         }
     }
 
-    if (Serial.available() == MESSAGELEN) {
+    if (Serial.available() >= MESSAGELEN) {
         uint8_t received_message[MESSAGELEN];
         Serial.readBytes(received_message, MESSAGELEN);
 
-        // Verificar o cabeçalho e a mensagem recebida
         for (uint8_t i = 0; i < MESSAGELEN; i++) {
             Serial.print(received_message[i], HEX);
             Serial.print(" ");
@@ -70,20 +78,17 @@ void waitForMessage() {
         Serial.println();
 
         sendMessage(received_message, MESSAGELEN);
-        currentState = WAITING_FOR_RECORD;
+        currentState = IDLE;
     }
 }
 
-
 void listenForRecord() {
-	int response = receiveMessage(0);
-	unsigned long start_time = millis();
-	while(response == -1 && start_time - millis() < 10000){
-		response = receiveMessage(0);
-	}
-	if (response == 1) {
-		currentState = WAITING_FOR_MESSAGE;
-	}
+    int response = receiveMessage(0);
+    unsigned long start_time = millis();
+    while (response == -1 && millis() - start_time < 10000) {
+        response = receiveMessage(0);
+    }
+    if (response == 1) {
+        currentState = IDLE;
+    }
 }
-
-

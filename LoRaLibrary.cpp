@@ -46,23 +46,30 @@ void sendMessage(uint8_t *data, uint8_t length) {
     }
     Serial.println();
 
-    if (data[0] == 0xFF && data[1] == 0xFF) {
+    int headerIndex = -1;
+    for (uint8_t i = 0; i < length - 1; i++) {
+        if (data[i] == 0xFF && data[i + 1] == 0xFF) {
+            headerIndex = i;
+            break;
+        }
+    }
+
+    if (headerIndex != -1) {
         Serial.println("Header verified");
 
-        // Enviar a mensagem via LoRa, incluindo o cabeçalho
-        rf95.send(data, length);
+        rf95.send(data + headerIndex, length - headerIndex);
         rf95.waitPacketSent();
         Serial.println("Message sent successfully.");
 
         Serial.print("Sent message via LoRa: ");
-        for (uint8_t i = 0; i < length; i++) {
+        for (uint8_t i = headerIndex; i < length; i++) {
             Serial.print(data[i], HEX);
             Serial.print(" ");
         }
         Serial.println();
         Serial.println("ACK");
     } else {
-        Serial.println("Incorrect Header");
+        Serial.println("Header not found");
     }
 }
 
