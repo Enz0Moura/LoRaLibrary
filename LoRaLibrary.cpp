@@ -57,7 +57,7 @@ void sendMessage(uint8_t *data, uint8_t length) {
     if (headerIndex != -1) {
         Serial.println("Header verified");
 
-        rf95.send(data + headerIndex, length - headerIndex);
+        rf95.send(data + headerIndex, length);
         rf95.waitPacketSent();
         Serial.println("Message sent successfully.");
 

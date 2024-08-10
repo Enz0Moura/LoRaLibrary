@@ -3,8 +3,9 @@
 #define BEACONLEN 10
 #define BUFFERLEN 2
 #define ISACK 1
-//TODO: Envio de mensagens está bugado.
+
 enum State {
+    IDLE,
     INITIALIZING,
     WAITING_FOR_MESSAGE,
 	WAITING_FOR_RECORD,
@@ -15,40 +16,35 @@ State currentState = INITIALIZING;
 void setup() {
     setupLoRa();
     currentState = WAITING_FOR_MESSAGE;
+    Serial.println("Sistema iniciado. Aguardando comandos.");
 }
 
 void loop() {
-    switch (currentState) {
-        case WAITING_FOR_MESSAGE:
-            waitForMessage();
-            break;
-		case WAITING_FOR_RECORD:
-			listenForRecord();
-			break;
-        default:
-            currentState = WAITING_FOR_MESSAGE;
-            break;
+   if (Serial.available()) {
+        char command = Serial.read();
+        handleCommand(command);
     }
+
 }
 
-void handleCommand(String command) {
-    if (command == "wm") {
+void handleCommand(char command) {
+    if (command == 'M') {
         currentState = WAITING_FOR_MESSAGE;
         Serial.println("Estado redefinido para WAITING_FOR_MESSAGE.");
         waitForMessage();
-    } else if (command == "wr") {
+    } else if (command == 'B') {
         currentState = WAITING_FOR_RECORD;
         Serial.println("Estado alterado para WAITING_FOR_RECORD.");
         listenForRecord();
     } else {
         Serial.println("Comando desconhecido.");
+		Serial.println(command);
     }
 }
 
 void waitForMessage() {
-	unsigned long start_time = millis();
 	Serial.println("READY");
-
+	unsigned long start_time = millis();
     while (Serial.available() < MESSAGELEN) {
         Serial.println("READY");
         if (millis() - start_time > 10000) {
@@ -63,7 +59,7 @@ void waitForMessage() {
         Serial.readBytes(buffer, MESSAGELEN);
 
 		int headerIndex = -1;
-        for (int i = 0; i < BUFFERLEN; i++) {
+        for (int i = 0; i < MESSAGELEN; i++) {
             if (buffer[i] == 0xFF && buffer[i + 1] == 0xFF) {
                 headerIndex = i;
                 break;
@@ -88,7 +84,6 @@ void waitForMessage() {
         }
     }
 	}
-}
 
 
 void listenForRecord() {
