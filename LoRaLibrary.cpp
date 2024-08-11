@@ -107,6 +107,9 @@ int receiveMessage(bool is_ack) {
                 Serial.println();
 
                 if (buf[0] == 0xFF && buf[1] == 0xFF) {
+                    if (is_ack == true && len > 2) {
+                        return -1;
+                    }
                     Serial.println("Header verified");
                     Serial.write(buf, len);
 
