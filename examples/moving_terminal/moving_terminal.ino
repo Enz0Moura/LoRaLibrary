@@ -161,6 +161,9 @@ void listenForRecord() {
 		currentState = WAITING_FOR_MESSAGE;
 
 	}
+	if (response == -1){
+	    Serial.println("Timeout waiting for record, restarting...");
+	}
 }
 
 void listenForBeacon() {
