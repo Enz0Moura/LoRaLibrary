@@ -92,6 +92,7 @@ void sendBeacon(){
             currentState = WAITING_ACK;
             start_time = millis();
             while (receiveMessage(ISACK) == -1){
+                sendMessage(received_message, BEACONLEN);
                 if (millis() - start_time > 10000) {
                     Serial.println("Timeout waiting for beacon, restarting...");
                     currentState = IDLE;
