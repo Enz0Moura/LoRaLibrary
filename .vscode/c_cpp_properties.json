@@ -1,0 +1,38 @@
+{
+    "configurations": [
+        {
+            "name": "Arduino Uno",
+            "compilerPath": "/home/enzo-moura/CppProjects/LoRaLibrary/.arduino/data/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin/avr-g++",
+            "intelliSenseMode": "linux-gcc-x64",
+            "cppStandard": "c++17",
+            "cStandard": "c11",
+            "includePath": [
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/.arduino/user/libraries/LoRaLibrary/src",
+                "${workspaceFolder}/.arduino/user/libraries/RadioHead",
+                "${workspaceFolder}/.arduino/data/packages/arduino/hardware/avr/1.8.8/cores/arduino",
+                "${workspaceFolder}/.arduino/data/packages/arduino/hardware/avr/1.8.8/libraries/SPI/src",
+                "${workspaceFolder}/.arduino/data/packages/arduino/hardware/avr/1.8.8/variants/standard"
+            ],
+            "defines": [
+            "ARDUINO=10808",
+            "ARDUINO_AVR_UNO",
+            "F_CPU=16000000L",
+            "__AVR__",
+            "__AVR_ATmega328P__"
+            ]
+        },
+        {
+            "name": "new conf",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-clang-x64"
+        }
+    ],
+    "version": 4
+}

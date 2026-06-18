@@ -1,4 +1,5 @@
-#include <LoRaLibrary.h>
+#include <LoRaLibrary.hpp>
+
 #define MESSAGELEN 21
 #define BEACONLEN 10
 #define BUFFERLEN 2

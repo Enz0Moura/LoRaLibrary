@@ -1,0 +1,5 @@
+cmake --build build --target prepare_library
+
+ls -l .arduino/user/libraries
+
+arduino-cli --config-file ./arduino-cli.yaml lib list

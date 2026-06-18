@@ -1,4 +1,4 @@
-#include <LoRaLibrary.h>
+#include <LoRaLibrary.hpp>
 #define MESSAGELEN 21
 #define BEACONLEN 10
 #define BUFFERLEN 2
@@ -8,6 +8,7 @@ enum State {
     INITIALIZING,
     WAITING_FOR_MESSAGE,
 	WAITING_FOR_RECORD,
+    IDLE
 };
 
 State currentState = INITIALIZING;

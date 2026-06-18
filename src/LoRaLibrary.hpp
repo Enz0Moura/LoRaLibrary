@@ -1,6 +1,6 @@
-#ifndef LORALIBRARY_H
-#define LORALIBRARY_H
-
+#ifndef LORALIBRARY_HPP
+#define LORALIBRARY_HPP
+#include <Arduino.h>
 #include <SPI.h>
 #include <RH_RF95.h>
 

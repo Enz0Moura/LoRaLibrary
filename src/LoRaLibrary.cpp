@@ -1,4 +1,4 @@
-#include "LoRaLibrary.h"
+#include "LoRaLibrary.hpp"
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
