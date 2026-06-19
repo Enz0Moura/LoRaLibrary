@@ -88,8 +88,8 @@ void waitForMessage() {
             Serial.println("Header not found or insufficient data after header");
         }
     }
-	}
 }
+
 
 
 void listenForRecord() {
