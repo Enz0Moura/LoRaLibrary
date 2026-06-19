@@ -1,21 +1,5 @@
-#ifndef LORALIBRARY_HPP
-#define LORALIBRARY_HPP
-#include <Arduino.h>
-#include <SPI.h>
-#include <RH_RF95.h>
+#pragma once
 
-#define RFM95_CS 10
-#define RFM95_RST 9
-#define RFM95_INT 2
-#define RF95_FREQ 915.0
-
-extern RH_RF95 rf95;
-
-void setupLoRa();
-
-void sendMessage(uint8_t *data, uint8_t length);
-
-int receiveMessage(bool is_ack);
-
-int sendBeacon(uint8_t *data, uint8_t length);
-#endif
+#include "lora_protocol/LoRaProtocol.hpp"
+#include "lora_serial/SerialProtocol.hpp"
+#include "lora_types/LoCINOTypes.hpp"
