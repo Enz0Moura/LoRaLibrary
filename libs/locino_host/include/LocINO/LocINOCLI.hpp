@@ -7,5 +7,8 @@ namespace LocINO {
     class CLI {
         public:
         static void printEvent(const LocINO::EventPacket& event);
+
+        private:
+            static bool isPrintablePayload(const LocINO::LoRaPacket& packet);
     };
 }

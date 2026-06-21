@@ -26,6 +26,7 @@ namespace LocINO{
                 break;
 
             case CpuEventType::LoRaRx:
+            {
                 std::cout << "LoRa RX: ";
 
                 for (uint8_t i = 0; i < event.length; i++) {
@@ -36,12 +37,48 @@ namespace LocINO{
                             << " ";
                 }
 
-                std::cout << std::dec << "\n";
+                std::cout << std::dec;
+
+                LocINO::LoRaPacket packet;
+                packet.length = event.length;
+                memcpy(packet.data, event.data, event.length);
+
+                if (isPrintablePayload(packet)) {
+                    std::cout << " | Text: \"";
+
+                    for (uint8_t i = LocINO::HEADER_SIZE;
+                        i < packet.length;
+                        ++i) {
+                        std::cout << static_cast<char>(packet.data[i]);
+                    }
+
+                    std::cout << "\"";
+                }
+
+                std::cout << "\n";
                 break;
+            }
 
             default:
                 std::cout << "Unknown event\n";
                 break;
         }
+    }
+
+    bool isPrintablePayload(const LocINO::LoRaPacket& packet) {
+        if (packet.length <= LocINO::HEADER_SIZE) {
+            return false;
+        }
+
+        for (uint8_t i = LocINO::HEADER_SIZE; i < packet.length; ++i) {
+            if (!isprint(packet.data[i]) &&
+                packet.data[i] != '\r' &&
+                packet.data[i] != '\n' &&
+                packet.data[i] != '\t') {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
