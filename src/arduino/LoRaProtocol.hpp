@@ -2,39 +2,29 @@
 
 #include <Arduino.h>
 #include <RH_RF95.h>
-#include "../lora_types/LoCINOTypes.hpp"
-#include "../lora_serial/SerialProtocol.hpp"
+
+#include "shared/LocINOTypes.hpp"
 
 namespace LocINO {
 
 class LoRaProtocol {
 public:
-    LoRaProtocol(
-        RH_RF95& radio,
-        uint8_t resetPin,
-        float frequency
-    );
+    LoRaProtocol(RH_RF95& radio, uint8_t resetPin, float frequency);
 
     bool begin();
 
     bool send(const uint8_t* data, uint8_t length);
-    bool send(const Packet& packet);
+    bool send(const LoRaPacket& packet);
 
     LoRaStatus receive(
-        Packet& packet,
-        unsigned long timeoutMs = 10000,
+        LoRaPacket& packet,
+        unsigned long timeoutMs = DEFAULT_TIMEOUT_MS,
         ReceiveMode mode = ReceiveMode::Any
     );
 
     LoRaStatus sendBeacon(
-        const uint8_t* data,
-        uint8_t length,
-        unsigned long timeoutMs = 10000
-    );
-
-    LoRaStatus sendBeacon(
-        const Packet& packet,
-        unsigned long timeoutMs = 10000
+        const LoRaPacket& packet,
+        unsigned long timeoutMs = DEFAULT_TIMEOUT_MS
     );
 
 private:

@@ -15,7 +15,6 @@ bool LoRaProtocol::begin() {
     digitalWrite(_resetPin, HIGH);
 
     delay(100);
-
     resetRadio();
 
     if (!_radio.init()) {
@@ -51,12 +50,12 @@ bool LoRaProtocol::send(const uint8_t* data, uint8_t length) {
     return true;
 }
 
-bool LoRaProtocol::send(const Packet& packet) {
+bool LoRaProtocol::send(const LoRaPacket& packet) {
     return send(packet.data, packet.length);
 }
 
 LoRaStatus LoRaProtocol::receive(
-    Packet& packet,
+    LoRaPacket& packet,
     unsigned long timeoutMs,
     ReceiveMode mode
 ) {
@@ -92,28 +91,20 @@ LoRaStatus LoRaProtocol::receive(
 }
 
 LoRaStatus LoRaProtocol::sendBeacon(
-    const uint8_t* data,
-    uint8_t length,
+    const LoRaPacket& packet,
     unsigned long timeoutMs
 ) {
-    if (!send(data, length)) {
+    if (!send(packet)) {
         return LoRaStatus::Error;
     }
 
-    Packet response;
+    LoRaPacket response;
 
     return receive(
         response,
         timeoutMs,
         ReceiveMode::AckOnly
     );
-}
-
-LoRaStatus LoRaProtocol::sendBeacon(
-    const Packet& packet,
-    unsigned long timeoutMs
-) {
-    return sendBeacon(packet.data, packet.length, timeoutMs);
 }
 
 void LoRaProtocol::resetRadio() {

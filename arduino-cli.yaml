@@ -3,4 +3,4 @@ board_manager:
 directories:
   data: ./.arduino/data
   downloads: ./.arduino/downloads
-  user: ./.arduino/user
+  user: ./.arduino/

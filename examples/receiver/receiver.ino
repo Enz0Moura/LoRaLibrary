@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include <RH_RF95.h>
-#include <LoRaLibrary.hpp>
+#include <arduino/LoRaLibrary.hpp>
 
 #define RFM95_CS 10
 #define RFM95_RST 9

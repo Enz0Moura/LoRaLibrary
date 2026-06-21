@@ -8,19 +8,29 @@ set(ARDUINO_CONFIG ${CMAKE_SOURCE_DIR}/arduino-cli.yaml)
 set(FQBN arduino:avr:uno)
 set(PORT /dev/ttyACM0)
 
-set(LOCAL_LIB_DIR ${CMAKE_SOURCE_DIR}/.arduino/user/libraries)
+set(LOCAL_LIB_DIR ${CMAKE_SOURCE_DIR}/.arduino/libraries)
 set(LOCAL_LIB_LINK ${LOCAL_LIB_DIR}/LoRaLibrary)
+
 
 set(MOVING_TERMINAL_SKETCH ${CMAKE_SOURCE_DIR}/examples/moving_terminal)
 set(RECEIVER_SKETCH ${CMAKE_SOURCE_DIR}/examples/receiver)
 
+
 add_custom_target(prepare_library
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${LOCAL_LIB_DIR}
-    COMMAND ${CMAKE_COMMAND} -E rm -f ${LOCAL_LIB_LINK}
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
-            ${CMAKE_SOURCE_DIR}
-            ${LOCAL_LIB_LINK}
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${LOCAL_LIB_LINK}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${LOCAL_LIB_LINK}/src
+
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/src/arduino
+            ${LOCAL_LIB_LINK}/src/
+
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/src/shared
+            ${LOCAL_LIB_LINK}/src/shared
+
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/library.properties
+            ${LOCAL_LIB_LINK}/library.properties
 )
 
 add_custom_target(arduino_install_deps
