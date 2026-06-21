@@ -89,7 +89,7 @@ bool SerialPort::configure(int baudRate) {
         return false;
     }
 
-    PurgeComm(_handle, PURGE_RXCLEAR | PURGE_TXCLEAR);
+    //PurgeComm(_handle, PURGE_RXCLEAR | PURGE_TXCLEAR);
 
     return true;
 }
