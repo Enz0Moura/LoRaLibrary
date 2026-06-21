@@ -31,7 +31,7 @@
             "cStandard": "c17",
             "includePath": [
                 "${workspaceFolder}/libs/locino_protocol/include",
-                "${workspaceFolder}/libs/locino_host"
+                "${workspaceFolder}/libs/locino_host/include"
             ],
             "defines": []
         }
