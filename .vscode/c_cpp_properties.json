@@ -30,8 +30,8 @@
             "cppStandard": "c++17",
             "cStandard": "c17",
             "includePath": [
-                "${workspaceFolder}/src/linux/include",
-                "${workspaceFolder}/src/shared"
+                "${workspaceFolder}/libs/locino_protocol/include",
+                "${workspaceFolder}/libs/locino_host"
             ],
             "defines": []
         }

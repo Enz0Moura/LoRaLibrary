@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LocINOTypes.hpp"
+#include "Types.hpp"
 
 namespace LocINO {
 

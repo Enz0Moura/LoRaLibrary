@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Arduino.h>
-#include "shared/LocINOTypes.hpp"
-#include "shared/ProtocolCodec.hpp"
+#include <LocINO/Types.hpp>
+#include <LocINO/ProtocolCodec.hpp>
 
 namespace LocINO {
 

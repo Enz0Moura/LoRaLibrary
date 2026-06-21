@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <RH_RF95.h>
 
-#include "shared/LocINOTypes.hpp"
+#include <LocINO/Types.hpp>
 
 namespace LocINO {
 

@@ -50,6 +50,18 @@ enum class ReceiveMode : uint8_t {
 struct LoRaPacket {
     uint8_t data[MAX_PACKET_SIZE];
     uint8_t length = 0;
+
+    void addHeader(){
+        data[0] = LORA_HEADER_1;
+        data[1] = LORA_HEADER_2;
+    };
+
+    static LoRaPacket createWithHeader(uint8_t length){
+        LoRaPacket packet;
+        packet.length = length;
+        packet.addHeader();
+        return packet;
+    }
 };
 
 struct CommandPacket {
@@ -76,6 +88,15 @@ inline LoRaPacket createAck() {
     packet.data[0] = LORA_HEADER_1;
     packet.data[1] = LORA_HEADER_2;
     packet.length = ACK_LENGTH;
+    return packet;
+}
+
+inline LoRaPacket createPacket(uint8_t length) {
+    LoRaPacket packet;
+
+    packet.length = length;
+    packet.addHeader();
+    
     return packet;
 }
 

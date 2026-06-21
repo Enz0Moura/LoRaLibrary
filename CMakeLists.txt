@@ -21,16 +21,14 @@ add_custom_target(prepare_library
     COMMAND ${CMAKE_COMMAND} -E make_directory ${LOCAL_LIB_LINK}/src
 
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/src/arduino
-            ${LOCAL_LIB_LINK}/src/
+            ${CMAKE_SOURCE_DIR}/libs/locino_arduino/
+            ${LOCAL_LIB_LINK}/
 
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/src/shared
-            ${LOCAL_LIB_LINK}/src/shared
+            ${CMAKE_SOURCE_DIR}/libs/locino_protocol/include
+            ${LOCAL_LIB_LINK}/src/
 
-    COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/library.properties
-            ${LOCAL_LIB_LINK}/library.properties
+    
 )
 
 add_custom_target(arduino_install_deps
