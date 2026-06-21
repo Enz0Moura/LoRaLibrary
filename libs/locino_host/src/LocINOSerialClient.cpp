@@ -30,19 +30,19 @@ bool LocINOSerialClient::waitReady(unsigned long timeoutMs) {
 }
 
 bool LocINOSerialClient::sendMessage(const LoRaPacket& packet) {
-    return sendCommand(CpuCommandType::SendMessage, packet.data, packet.length);
+    return sendCommand(CpuCommandType::LoRaSendMessage, packet.data, packet.length);
 }
 
 bool LocINOSerialClient::sendBeacon(const LoRaPacket& packet) {
-    return sendCommand(CpuCommandType::SendBeacon, packet.data, packet.length);
+    return sendCommand(CpuCommandType::LoRaSendBeacon, packet.data, packet.length);
 }
 
 bool LocINOSerialClient::listenRecord() {
-    return sendCommand(CpuCommandType::ListenRecord, nullptr, 0);
+    return sendCommand(CpuCommandType::LoRaListenRecord, nullptr, 0);
 }
 
 bool LocINOSerialClient::listenBeacon() {
-    return sendCommand(CpuCommandType::ListenBeacon, nullptr, 0);
+    return sendCommand(CpuCommandType::LoRaListenBeacon, nullptr, 0);
 }
 
 bool LocINOSerialClient::sendCommand(

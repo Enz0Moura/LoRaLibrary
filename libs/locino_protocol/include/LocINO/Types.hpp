@@ -19,10 +19,10 @@ constexpr uint8_t MAX_PACKET_SIZE = 251;
 constexpr unsigned long DEFAULT_TIMEOUT_MS = 10000;
 
 enum class CpuCommandType : uint8_t {
-    SendMessage = 0x10,
-    SendBeacon = 0x11,
-    ListenRecord = 0x12,
-    ListenBeacon = 0x13
+    LoRaSendMessage = 0x10,
+    LoRaSendBeacon = 0x11,
+    LoRaListenRecord = 0x12,
+    LoRaListenBeacon = 0x13
 };
 
 enum class CpuEventType : uint8_t {
