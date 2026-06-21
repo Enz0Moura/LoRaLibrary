@@ -43,7 +43,7 @@ namespace LocINO{
                 packet.length = event.length;
                 memcpy(packet.data, event.data, event.length);
 
-                if (isPrintablePayload(packet)) {
+                if (CLI::isPrintablePayload(packet)) {
                     std::cout << " | Text: \"";
 
                     for (uint8_t i = LocINO::HEADER_SIZE;
@@ -65,7 +65,7 @@ namespace LocINO{
         }
     }
 
-    bool isPrintablePayload(const LocINO::LoRaPacket& packet) {
+    bool CLI::isPrintablePayload(const LocINO::LoRaPacket& packet) {
         if (packet.length <= LocINO::HEADER_SIZE) {
             return false;
         }
