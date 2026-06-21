@@ -2,22 +2,20 @@
 
 #ifdef _WIN32
 
+#include <stdexcept>
+#include <string>
+#include <windows.h>
+
 namespace LocINO {
 
 static DWORD toWindowsBaudRate(int baudRate) {
     switch (baudRate) {
-        case 9600:
-            return CBR_9600;
-        case 19200:
-            return CBR_19200;
-        case 38400:
-            return CBR_38400;
-        case 57600:
-            return CBR_57600;
-        case 115200:
-            return CBR_115200;
-        default:
-            return CBR_9600;
+        case 9600: return CBR_9600;
+        case 19200: return CBR_19200;
+        case 38400: return CBR_38400;
+        case 57600: return CBR_57600;
+        case 115200: return CBR_115200;
+        default: return CBR_9600;
     }
 }
 
@@ -42,22 +40,27 @@ SerialPort::SerialPort(const std::string& device, int baudRate) {
         0,
         nullptr,
         OPEN_EXISTING,
-        0,
+        FILE_ATTRIBUTE_NORMAL,
         nullptr
     );
 
-    if (_handle != INVALID_HANDLE_VALUE) {
-        configure(baudRate);
+    if (_handle == INVALID_HANDLE_VALUE) {
+        return;
     }
+
+    configure(baudRate);
 }
 
 SerialPort::~SerialPort() {
     if (_handle != INVALID_HANDLE_VALUE) {
         CloseHandle(_handle);
+        _handle = INVALID_HANDLE_VALUE;
     }
 }
 
 bool SerialPort::configure(int baudRate) {
+    SetupComm(_handle, 4096, 4096);
+
     DCB dcb{};
     dcb.DCBlength = sizeof(dcb);
 
@@ -71,17 +74,24 @@ bool SerialPort::configure(int baudRate) {
     dcb.StopBits = ONESTOPBIT;
 
     dcb.fBinary = TRUE;
+
+    dcb.fOutxCtsFlow = FALSE;
+    dcb.fOutxDsrFlow = FALSE;
+    dcb.fDsrSensitivity = FALSE;
+    dcb.fOutX = FALSE;
+    dcb.fInX = FALSE;
+
     dcb.fDtrControl = DTR_CONTROL_ENABLE;
-    dcb.fRtsControl = RTS_CONTROL_ENABLE;
+    dcb.fRtsControl = RTS_CONTROL_DISABLE;
 
     if (!SetCommState(_handle, &dcb)) {
         return false;
     }
 
     COMMTIMEOUTS timeouts{};
-    timeouts.ReadIntervalTimeout = 50;
-    timeouts.ReadTotalTimeoutConstant = 1000;
-    timeouts.ReadTotalTimeoutMultiplier = 10;
+    timeouts.ReadIntervalTimeout = MAXDWORD;
+    timeouts.ReadTotalTimeoutConstant = 100;
+    timeouts.ReadTotalTimeoutMultiplier = 0;
     timeouts.WriteTotalTimeoutConstant = 1000;
     timeouts.WriteTotalTimeoutMultiplier = 10;
 
@@ -89,7 +99,9 @@ bool SerialPort::configure(int baudRate) {
         return false;
     }
 
-    //PurgeComm(_handle, PURGE_RXCLEAR | PURGE_TXCLEAR);
+    EscapeCommFunction(_handle, SETDTR);
+
+    Sleep(2500);
 
     return true;
 }
@@ -109,7 +121,7 @@ bool SerialPort::writeBytes(const uint8_t* data, size_t length) {
         nullptr
     );
 
-    return ok && written == length;
+    return ok && written == static_cast<DWORD>(length);
 }
 
 bool SerialPort::readByte(uint8_t& byte) {
@@ -134,11 +146,15 @@ bool SerialPort::readBytes(uint8_t* data, size_t length) {
             nullptr
         );
 
-        if (!ok || bytesRead == 0) {
+        if (!ok) {
             return false;
         }
 
-        total += bytesRead;
+        if (bytesRead == 0) {
+            return false;
+        }
+
+        total += static_cast<size_t>(bytesRead);
     }
 
     return true;
