@@ -52,12 +52,7 @@ int main() {
 
     LocINO::EventPacket event;
 
-    auto packet = LocINO::createPacket(7);
-    packet.data[2] = 'H';
-    packet.data[3] = 'e';
-    packet.data[4] = 'l';
-    packet.data[5] = 'l';
-    packet.data[6] = 'o';
+    auto packet = LocINO::LoRaPacket::fromText("Hello World!");
 
     if (!client.sendMessage(packet)) {
         std::cerr << "Failed to send command\n";

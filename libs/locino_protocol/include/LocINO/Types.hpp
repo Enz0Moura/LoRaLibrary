@@ -62,6 +62,26 @@ struct LoRaPacket {
         packet.addHeader();
         return packet;
     }
+
+    static LoRaPacket fromText(const char* text) {
+        LoRaPacket packet;
+
+        packet.addHeader();
+
+        uint8_t textLength =
+            static_cast<uint8_t>(strlen(text));
+
+        packet.length = HEADER_SIZE + textLength;
+
+        memcpy(
+            packet.data + HEADER_SIZE,
+            text,
+            textLength
+        );
+
+        return packet;
+    }
+
 };
 
 struct CommandPacket {
