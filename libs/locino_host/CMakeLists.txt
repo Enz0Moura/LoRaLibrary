@@ -4,6 +4,7 @@ project(locino_host LANGUAGES CXX)
 
 add_library(locino_host
     src/LocINOSerialClient.cpp
+    src/LocINOCLI.cpp
 )
 
 if(WIN32)
