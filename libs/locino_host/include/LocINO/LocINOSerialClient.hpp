@@ -5,6 +5,8 @@
 #include "SerialPort.hpp"
 #include <stdexcept>
 #include <string>
+#include <chrono>
+#include <thread>
 
 namespace LocINO {
 

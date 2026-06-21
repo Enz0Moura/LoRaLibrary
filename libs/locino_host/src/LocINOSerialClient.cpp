@@ -14,19 +14,32 @@ LocINOSerialClient::LocINOSerialClient(
 }
 
 bool LocINOSerialClient::waitReady(unsigned long timeoutMs) {
-    EventPacket event;
+    auto start = std::chrono::steady_clock::now();
 
-    while (receiveEvent(event)) {
-        if (event.type == CpuEventType::Ack) {
-            return true;
+    while (true) {
+        EventPacket event;
+
+        if (receiveEvent(event)) {
+            if (event.type == CpuEventType::Ack) {
+                return true;
+            }
+
+            if (event.type == CpuEventType::Error) {
+                return false;
+            }
         }
 
-        if (event.type == CpuEventType::Error) {
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+            now - start
+        ).count();
+
+        if (elapsed >= timeoutMs) {
             return false;
         }
-    }
 
-    return false;
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
 }
 
 bool LocINOSerialClient::sendMessage(const LoRaPacket& packet) {
