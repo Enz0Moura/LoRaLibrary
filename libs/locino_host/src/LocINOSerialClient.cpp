@@ -77,26 +77,30 @@ bool LocINOSerialClient::sendCommand(
 
 bool LocINOSerialClient::receiveEvent(
     EventPacket& event,
-    unsigned long timeout
+    unsigned long timeoutMs
 ) {
-    const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout);
+    const auto deadline =
+        std::chrono::steady_clock::now() +
+        std::chrono::milliseconds(timeoutMs);
 
-    auto readByteUntil = [&](uint8_t& byte) -> bool {
-        while (std::chrono::steady_clock::now() < deadline) {
-            if (_serial.readByte(byte)) {
-                return true;
-            }
+    auto remainingMs = [&]() -> unsigned long {
+        auto now = std::chrono::steady_clock::now();
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if (now >= deadline) {
+            return 0;
         }
 
-        return false;
+        return static_cast<unsigned long>(
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                deadline - now
+            ).count()
+        );
     };
 
     uint8_t start = 0;
 
     do {
-        if (!readByteUntil(start)) {
+        if (!_serial.readByte(start, remainingMs())) {
             return false;
         }
     } while (start != SERIAL_START);
@@ -104,11 +108,11 @@ bool LocINOSerialClient::receiveEvent(
     uint8_t type = 0;
     uint8_t length = 0;
 
-    if (!readByteUntil(type)) {
+    if (!_serial.readByte(type, remainingMs())) {
         return false;
     }
 
-    if (!readByteUntil(length)) {
+    if (!_serial.readByte(length, remainingMs())) {
         return false;
     }
 
@@ -119,15 +123,13 @@ bool LocINOSerialClient::receiveEvent(
     event.type = static_cast<CpuEventType>(type);
     event.length = length;
 
-    for (uint8_t i = 0; i < length; ++i) {
-        if (!readByteUntil(event.data[i])) {
-            return false;
-        }
+    if (length > 0 && !_serial.readBytes(event.data, length, remainingMs())) {
+        return false;
     }
 
     uint8_t receivedChecksum = 0;
 
-    if (!readByteUntil(receivedChecksum)) {
+    if (!_serial.readByte(receivedChecksum, remainingMs())) {
         return false;
     }
 
