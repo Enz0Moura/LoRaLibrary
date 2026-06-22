@@ -23,7 +23,10 @@ public:
     bool listenRecord();
     bool listenBeacon();
 
-    bool receiveEvent(EventPacket& event);
+    bool receiveEvent(
+    EventPacket& event,
+    unsigned long timeout = DEFAULT_TIMEOUT_MS
+    );
 
 private:
     SerialPort _serial;

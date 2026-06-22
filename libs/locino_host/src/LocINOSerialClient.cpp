@@ -75,11 +75,28 @@ bool LocINOSerialClient::sendCommand(
     return _serial.writeBytes(frame, frameLength);
 }
 
-bool LocINOSerialClient::receiveEvent(EventPacket& event) {
+bool LocINOSerialClient::receiveEvent(
+    EventPacket& event,
+    unsigned long timeout
+) {
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout);
+
+    auto readByteUntil = [&](uint8_t& byte) -> bool {
+        while (std::chrono::steady_clock::now() < deadline) {
+            if (_serial.readByte(byte)) {
+                return true;
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+
+        return false;
+    };
+
     uint8_t start = 0;
 
     do {
-        if (!_serial.readByte(start)) {
+        if (!readByteUntil(start)) {
             return false;
         }
     } while (start != SERIAL_START);
@@ -87,11 +104,11 @@ bool LocINOSerialClient::receiveEvent(EventPacket& event) {
     uint8_t type = 0;
     uint8_t length = 0;
 
-    if (!_serial.readByte(type)) {
+    if (!readByteUntil(type)) {
         return false;
     }
 
-    if (!_serial.readByte(length)) {
+    if (!readByteUntil(length)) {
         return false;
     }
 
@@ -102,13 +119,15 @@ bool LocINOSerialClient::receiveEvent(EventPacket& event) {
     event.type = static_cast<CpuEventType>(type);
     event.length = length;
 
-    if (length > 0 && !_serial.readBytes(event.data, length)) {
-        return false;
+    for (uint8_t i = 0; i < length; ++i) {
+        if (!readByteUntil(event.data[i])) {
+            return false;
+        }
     }
 
     uint8_t receivedChecksum = 0;
 
-    if (!_serial.readByte(receivedChecksum)) {
+    if (!readByteUntil(receivedChecksum)) {
         return false;
     }
 
