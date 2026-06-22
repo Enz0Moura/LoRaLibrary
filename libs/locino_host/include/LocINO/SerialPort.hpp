@@ -16,8 +16,12 @@ public:
     ~SerialPort();
 
     bool writeBytes(const uint8_t* data, size_t length);
+
     bool readByte(uint8_t& byte);
+    bool readByte(uint8_t& byte, unsigned long timeoutMs);
+
     bool readBytes(uint8_t* data, size_t length);
+    bool readBytes(uint8_t* data, size_t length, unsigned long timeoutMs);
 
 private:
 #ifdef _WIN32
