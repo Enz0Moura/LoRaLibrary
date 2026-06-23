@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include <RH_RF95.h>
+#include "LoRaRadio.hpp"
 
 #include <LocINO/Types.hpp>
 
@@ -11,7 +11,7 @@ namespace LocINO {
  * @brief Arduino-side LoRa radio protocol wrapper for LocINO packets.
  *
  * LoRaProtocol owns the high-level transmission and reception workflow around
- * an existing RadioHead RH_RF95 driver instance. It applies the LocINO packet
+ * a LoRaRadio driver instance. It applies the LocINO packet
  * header rules, handles radio initialization/reset, and provides helpers for
  * request/acknowledgement style communication.
  */
@@ -20,11 +20,10 @@ public:
     /**
      * @brief Creates a LoRa protocol controller around an RH_RF95 radio driver.
      *
-     * @param radio RadioHead RF95 driver instance used for all LoRa operations.
-     * @param resetPin Arduino GPIO pin connected to the radio reset line.
+     * @param radio LoRaRadio driver instance used for all LoRa operations.
      * @param frequency Radio frequency, in MHz, used during initialization.
      */
-    LoRaProtocol(RH_RF95& radio, uint8_t resetPin, float frequency);
+    LoRaProtocol(LoRaRadio& radio, uint8_t resetPin, float frequency);
 
     /**
      * @brief Initializes and configures the LoRa radio module.
@@ -86,14 +85,13 @@ public:
     );
 
 private:
-    RH_RF95& _radio;
+    LoRaRadio& _radio;
     uint8_t _resetPin;
     float _frequency;
 
     /**
      * @brief Performs the hardware reset sequence for the LoRa radio module.
      */
-    void resetRadio();
 
     /**
      * @brief Finds the LocINO header position inside a received byte buffer.

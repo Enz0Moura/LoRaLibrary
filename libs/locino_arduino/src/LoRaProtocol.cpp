@@ -3,20 +3,13 @@
 namespace LocINO {
 
 LoRaProtocol::LoRaProtocol(
-    RH_RF95& radio,
+    LoRaRadio& radio,
     uint8_t resetPin,
     float frequency
 ) : _radio(radio),
-    _resetPin(resetPin),
     _frequency(frequency) {}
 
 bool LoRaProtocol::begin() {
-    pinMode(_resetPin, OUTPUT);
-    digitalWrite(_resetPin, HIGH);
-
-    delay(100);
-    resetRadio();
-
     if (!_radio.init()) {
         return false;
     }
@@ -25,8 +18,8 @@ bool LoRaProtocol::begin() {
         return false;
     }
 
-    _radio.setTxPower(14, false);
-    _radio.setModemConfig(RH_RF95::Bw125Cr45Sf128);
+    _radio.setTxPower(14);
+    _radio.setModemConfigBw125Cr45Sf128();
 
     return true;
 }
@@ -105,13 +98,6 @@ LoRaStatus LoRaProtocol::sendBeacon(
         timeoutMs,
         ReceiveMode::AckOnly
     );
-}
-
-void LoRaProtocol::resetRadio() {
-    digitalWrite(_resetPin, LOW);
-    delay(10);
-    digitalWrite(_resetPin, HIGH);
-    delay(10);
 }
 
 int LoRaProtocol::findHeader(const uint8_t* data, uint8_t length) const {

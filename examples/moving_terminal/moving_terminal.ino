@@ -1,16 +1,17 @@
 
 #include <SPI.h>
-#include <RH_RF95.h>
+
 #include <LoRaLibrary.hpp>
+#include <LoRaRadio.hpp>
 
 #define RFM95_CS 10
 #define RFM95_RST 9
 #define RFM95_INT 2
 #define RF95_FREQ 915.0
 
-RH_RF95 rf95(RFM95_CS, RFM95_INT);
+LocINO::LoRaRadio radio(RFM95_CS, RFM95_INT, RFM95_RST);
 
-LocINO::LoRaProtocol lora(rf95, RFM95_RST, RF95_FREQ);
+LocINO::LoRaProtocol lora(radio, RFM95_RST, RF95_FREQ);
 LocINO::SerialProtocol cpu(Serial);
 
 void setup() {
@@ -39,19 +40,19 @@ void loop() {
 
 void handleCommand(const LocINO::CommandPacket& command) {
     switch (command.type) {
-        case LocINO::CpuCommandType::SendMessage:
+        case LocINO::CpuCommandType::LoRaSendMessage:
             handleSendMessage(command.toLoRaPacket());
             break;
 
-        case LocINO::CpuCommandType::SendBeacon:
+        case LocINO::CpuCommandType::LoRaSendBeacon:
             handleSendBeacon(command.toLoRaPacket());
             break;
 
-        case LocINO::CpuCommandType::ListenRecord:
+        case LocINO::CpuCommandType::LoRaListenRecord:
             handleListenRecord();
             break;
 
-        case LocINO::CpuCommandType::ListenBeacon:
+        case LocINO::CpuCommandType::LoRaListenBeacon:
             handleListenBeacon();
             break;
 
